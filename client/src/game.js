@@ -39,7 +39,7 @@ class Game
         this.plane = new THREE.Mesh(planeGeometry, planeMaterial)
         this.plane.scale.x = 10
         this.plane.scale.y = 10
-        this.plane.rotation.x = -90
+        this.plane.rotation.x = 3 * Math.PI / 2
 
 
         const cubeGeometry = new THREE.BoxGeometry()

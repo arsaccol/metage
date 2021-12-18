@@ -8,10 +8,17 @@ class Input
         this.domElement = domElement
 
         this.controls = new PointerLockControls(camera, domElement)
+
+        this.setupControls()
     }
 
     setupControls()
     {
+        this.domElement.addEventListener('click', () => {
+            this.controls.lock()
+        })
+
+
         this.controls.addEventListener('lock', () => {
             console.log(`locked`)
         })
@@ -21,8 +28,14 @@ class Input
         })
 
         this.controls.addEventListener('change', (e)  => {
-            console.log(JSON.stringify(e, null, 2))
+            console.log(`bugabuga`)
+
         })
+
+        this.controls.addEventListener('keydown', (e) => {
+            console.log('key down!')
+        })
+        
 
 
     }
