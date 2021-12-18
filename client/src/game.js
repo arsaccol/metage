@@ -3,7 +3,7 @@ import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonCont
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
 import { FlyControls } from 'three/examples/jsm/controls/FlyControls'
 
-import Input from './input'
+import Controls from './controls'
 
 class Game
 {
@@ -12,7 +12,7 @@ class Game
         console.log(`Running game constructor!`)
         this.init()
         this.setupSceneState()
-        this.input = new Input(this.camera, this.element)
+        this.input = new Controls(this.camera, this.element)
     }
 
     init()
