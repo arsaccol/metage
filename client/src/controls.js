@@ -13,6 +13,43 @@ class Controls
         this.setupControls()
     }
 
+    walkDirectionsCallback = (e) =>
+    {
+        if(this.controls.isLocked) 
+        {
+            const keyCode = String.fromCharCode(e.keyCode)
+
+            const lookDirection = new THREE.Vector3()
+            this.camera.getWorldDirection(lookDirection)
+            const backVector = lookDirection.clone().negate()
+
+            const upVector = new THREE.Vector3(0, 1, 0) // we don't update the up vector after getting the right vector
+            const rightVector = new THREE.Vector3()
+
+            rightVector.crossVectors(lookDirection, upVector)
+
+            const leftVector = rightVector.clone().negate()
+
+            this.keystoDirections = {
+                W: lookDirection,
+                S: backVector,
+                A: leftVector,
+                D: rightVector
+            }
+
+            const walkVector = new THREE.Vector3()
+
+            Object.keys(this.keystoDirections).map( k => {
+                if(keyCode === k)
+                    walkVector.add( this.keystoDirections[k] )
+            })
+
+            console.log(`Walk vector: ${JSON.stringify(walkVector)}`)
+
+            this.camera.position.add(walkVector)
+        }
+    }
+
     setupControls()
     {
         this.domElement.addEventListener('click', () => {
@@ -32,26 +69,11 @@ class Controls
         this.controls.addEventListener('change', (e)  => {
         })
 
+        document.addEventListener('keydown', this.walkDirectionsCallback)
 
-        document.body.addEventListener('keydown', (e) => {
-            if(this.controls.isLocked) {
-                const keyCode = String.fromCharCode(e.keyCode)
 
-                const lookDirection = new THREE.Vector3()
-                this.camera.getWorldDirection(lookDirection)
 
-                if( keyCode === 'W') {
-                    this.camera.position.add(lookDirection)
-                }
-                if( keyCode === 'S') {
-                    this.camera.position.add(lookDirection.negate())
-                    console.log(this.camera.position)
-                }
-            }
-        })
     }
-
-
 }
 
 export default Controls
