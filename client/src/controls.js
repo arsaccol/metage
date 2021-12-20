@@ -46,8 +46,30 @@ class Controls
 
             console.log(`Walk vector: ${JSON.stringify(walkVector)}`)
 
-            this.camera.position.add(walkVector)
+            const walkBeginEvent = new CustomEvent('walk-begin', {
+                detail: {
+                    walkVector: walkVector.normalize()
+                }
+            })
+
+            console.log(`walkBeginEvent: ${JSON.stringify(walkBeginEvent)}`)
+
+            document.body.dispatchEvent(walkBeginEvent)
+
+            
+
         }
+    }
+
+    stopWalkingCallback = (e) =>
+    {
+        if(this.controls.isLocked)
+        {
+            const walkEndEvent = new CustomEvent('walk-end')
+            document.body.dispatchEvent(walkEndEvent)
+        }
+
+
     }
 
     setupControls()
@@ -70,6 +92,13 @@ class Controls
         })
 
         document.addEventListener('keydown', this.walkDirectionsCallback)
+
+        document.addEventListener('keyup', this.stopWalkingCallback)
+        {
+            if(this.controls.isLocked)
+            {
+            }
+        }
 
 
 

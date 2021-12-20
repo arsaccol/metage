@@ -4,6 +4,7 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 import { FlyControls } from 'three/examples/jsm/controls/FlyControls'
 
 import Controls from './controls'
+import Player from './player'
 
 class Game
 {
@@ -23,6 +24,7 @@ class Game
         this.renderer = new THREE.WebGLRenderer()
         this.renderer.setSize(window.innerWidth, window.innerHeight)
         this.element = document.body.appendChild(this.renderer.domElement)
+        this.player = new Player(this.camera)
     }
 
 
@@ -57,6 +59,8 @@ class Game
     {
         requestAnimationFrame(this.loop)
         const delta = this.clock.getDelta()
+
+        this.player.update(delta)
 
         this.cube.rotation.x += 0.01
         this.cube.rotation.y += 0.01
