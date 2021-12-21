@@ -1,44 +1,146 @@
 import * as THREE from 'three'
-import { DefaultLoadingManager } from 'three'
+import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
 
 class Player
 {
-    constructor(camera)
+    constructor(camera, domElement)
     {
         this.camera = camera
-        this.walkSpeed = 10 
-        this.walkVector = new THREE.Vector3()
-        this.walking = false
+        this.domElement = domElement
+
+        this.controls = new PointerLockControls(camera, domElement)
+
+        this.walkSpeed = 5
+
+
+        this.isWalking = {
+            forward: false,
+            backward: false,
+            left: false,
+            right: false
+        }
 
         this.setupCallbacks()
     }
 
+
+    getWalkDirections()
+    {
+        const lookDirection = new THREE.Vector3()
+        this.camera.getWorldDirection(lookDirection)
+
+        const backVector = lookDirection.clone().negate()
+
+        const upVector = new THREE.Vector3(0, 1, 0)
+        const rightVector = new THREE.Vector3()
+
+        rightVector.crossVectors(lookDirection, upVector)
+
+        const leftVector = rightVector.clone().negate()
+
+        return {
+            forward: lookDirection,
+            backward: backVector,
+            left: leftVector,
+            right: rightVector
+        }
+    }
+
+
+
     setupCallbacks()
     {
-        document.body.addEventListener('walk-begin', e => {
-            e.preventDefault()
-            console.log(`Started walking!`)
-            this.walking = true
-            this.walkVector = e.detail.walkVector
+        this.domElement.addEventListener('click', () => 
+        {
+
+            if(!this.controls.isLocked) {
+                this.controls.lock()
+            }
         })
 
-        document.body.addEventListener('walk-end', e => {
-            e.preventDefault()
-            console.log(`Stopped walking!`)
-            this.walking = false
-            this.walkVector = new THREE.Vector3(0, 0, 0)
+
+        this.controls.addEventListener('lock', () => 
+        {
+            console.log(`locked`)
         })
+
+        this.controls.addEventListener('unlock', () =>
+        {
+            console.log(`unlocked`)
+        })
+
+        this.controls.addEventListener('change', e => 
+        {
+        })
+
+
+        document.body.addEventListener('keydown', e => 
+        {
+            if(this.controls.isLocked)
+            {
+                const keyCode = String.fromCharCode(e.keyCode)
+
+                if(keyCode === 'W')
+                    this.isWalking.forward = true 
+                if(keyCode === 'S')
+                    this.isWalking.backward = true
+                if(keyCode === 'A')
+                    this.isWalking.left = true
+                if(keyCode === 'D')
+                    this.isWalking.right = true
+            }
+        })
+
+        document.body.addEventListener('keyup', e =>
+        {
+            if(this.controls.isLocked)
+            {
+                const keyCode = String.fromCharCode(e.keyCode)
+                console.log(`Key code: ${keyCode}`)
+
+                if(keyCode === 'W')
+                    this.isWalking.forward = false
+                if(keyCode === 'S')
+                    this.isWalking.backward = false
+                if(keyCode === 'A')
+                    this.isWalking.left = false
+                if(keyCode === 'D')
+                    this.isWalking.right = false
+            }
+
+        })
+
 
     }
 
     update(dt)
     {
-        if(this.walking === true)
-        {
-            //console.log(`Walk vector ${this.walkVector}`)
-            this.camera.position.add(this.walkVector.multiplyScalar(this.walkSpeed * dt))
-        }
-        //this.camera.position.add(this.walkDirection.
+        //this.camera.position.add(this.walkVector.multiplyScalar(this.walkSpeed * dt))
+
+        const walkDirections = this.getWalkDirections()
+
+        // for each one of 'is walking forward', backward, etc
+        //Object.keys(this.isWalking).map(direction => {
+        //})
+
+        const areWalking = Object.keys(this.isWalking).filter( directionName => { return this.isWalking[directionName] === true })
+
+        //const walkVector = new THREE.Vector3()
+        areWalking.map(dir => {
+            this.camera.position.add( walkDirections[dir].multiplyScalar( this.walkSpeed * dt))
+        })
+
+        console.log(JSON.stringify(areWalking, null, 2))
+
+
+        /////////
+        //console.log(`Walking: ${JSON.stringify(this.isWalking, null, 2)}`)
+        /////////
+
+
+
+        //if(this.isWalking.forward)
+        //    this.camera.position.add(this.walk)
     }
 
     false

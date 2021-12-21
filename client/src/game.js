@@ -3,7 +3,6 @@ import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonCont
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
 import { FlyControls } from 'three/examples/jsm/controls/FlyControls'
 
-import Controls from './controls'
 import Player from './player'
 
 class Game
@@ -13,7 +12,7 @@ class Game
         console.log(`Running game constructor!`)
         this.init()
         this.setupSceneState()
-        this.input = new Controls(this.camera, this.element)
+        //this.input = new Controls(this.camera, this.element)
     }
 
     init()
@@ -24,7 +23,7 @@ class Game
         this.renderer = new THREE.WebGLRenderer()
         this.renderer.setSize(window.innerWidth, window.innerHeight)
         this.element = document.body.appendChild(this.renderer.domElement)
-        this.player = new Player(this.camera)
+        this.player = new Player(this.camera, this.element)
     }
 
 
