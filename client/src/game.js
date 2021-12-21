@@ -1,9 +1,7 @@
 import * as THREE from 'three'
-import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls'
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
-import { FlyControls } from 'three/examples/jsm/controls/FlyControls'
 
 import Player from './player'
+import { io } from 'socket.io-client'
 
 class Game
 {
@@ -12,7 +10,6 @@ class Game
         console.log(`Running game constructor!`)
         this.init()
         this.setupSceneState()
-        //this.input = new Controls(this.camera, this.element)
     }
 
     init()
