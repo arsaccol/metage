@@ -119,28 +119,14 @@ class Player
 
         const walkDirections = this.getWalkDirections()
 
-        // for each one of 'is walking forward', backward, etc
-        //Object.keys(this.isWalking).map(direction => {
-        //})
+        const activeWalkDirections = Object.keys(this.isWalking).filter( directionName => { return this.isWalking[directionName] === true })
 
-        const areWalking = Object.keys(this.isWalking).filter( directionName => { return this.isWalking[directionName] === true })
-
-        //const walkVector = new THREE.Vector3()
-        areWalking.map(dir => {
-            this.camera.position.add( walkDirections[dir].multiplyScalar( this.walkSpeed * dt))
+        const walkVector = new THREE.Vector3()
+        activeWalkDirections.map(direction => {
+            walkVector.add(walkDirections[direction].normalize().multiplyScalar(this.walkSpeed * dt))
         })
 
-        console.log(JSON.stringify(areWalking, null, 2))
-
-
-        /////////
-        //console.log(`Walking: ${JSON.stringify(this.isWalking, null, 2)}`)
-        /////////
-
-
-
-        //if(this.isWalking.forward)
-        //    this.camera.position.add(this.walk)
+        this.camera.position.add(walkVector)
     }
 
     false
