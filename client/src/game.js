@@ -10,6 +10,7 @@ class Game
         console.log(`Running game constructor!`)
         this.init()
         this.setupSceneState()
+        this.setupSocket()
     }
 
     init()
@@ -21,6 +22,26 @@ class Game
         this.renderer.setSize(window.innerWidth, window.innerHeight)
         this.element = document.body.appendChild(this.renderer.domElement)
         this.player = new Player(this.camera, this.element)
+
+    }
+
+    setupSocket()
+    {
+        this.socket = io(`http://localhost:${SOCKET_PORT}/`, {
+            cors: {
+                origin: `http://localhost/${CLIENT_PORT}`,
+                methods: ['GET', 'POST']
+            }
+        })
+        this.socket.on('connect', () => {
+            console.log(`Socket connected!`)
+        })
+
+
+        this.socket.on('connect_error', (err) => {
+            console.warn(`connect_error due to ${err.message}`)
+
+        })
     }
 
 

@@ -1,0 +1,2 @@
+window.CLIENT_PORT = 3000
+window.SOCKET_PORT = 12345
