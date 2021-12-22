@@ -96,7 +96,6 @@ class Player
             if(this.controls.isLocked)
             {
                 const keyCode = String.fromCharCode(e.keyCode)
-                console.log(`Key code: ${keyCode}`)
 
                 if(keyCode === 'W')
                     this.isWalking.forward = false
