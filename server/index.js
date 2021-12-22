@@ -1,14 +1,13 @@
+import dotenv from 'dotenv'
 import {Server} from 'socket.io'
 
-const SOCKET_PORT = 12345
-const CLIENT_ORIGIN = 'http://localhost:3000'
+dotenv.config()
 
-
-console.log(`Starting socket.io server on port ${SOCKET_PORT}!`)
+console.log(`Starting socket.io server on port ${process.env.SOCKET_PORT}!`)
 
 const io = new Server({
     cors: {
-        origin: CLIENT_ORIGIN,
+        origin: process.env.CLIENT_ORIGIN,
         //origin: '*',
         methods: ['GET', 'POST'],
     }
@@ -23,4 +22,4 @@ io.on('connection', socket => {
     })
 })
 
-io.listen(SOCKET_PORT)
+io.listen(process.env.SOCKET_PORT)
