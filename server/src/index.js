@@ -1,6 +1,8 @@
 import dotenv from 'dotenv'
 import {Server} from 'socket.io'
 
+import Game from './game.js'
+
 dotenv.config()
 
 console.log(`Starting socket.io server on port ${process.env.SOCKET_PORT}!`)
@@ -23,3 +25,5 @@ io.on('connection', socket => {
 })
 
 io.listen(process.env.SOCKET_PORT)
+
+const game = new Game(io)
