@@ -1,24 +1,47 @@
 import * as THREE from 'three'
+import { Server } from 'socket.io'
 
 class Game
 {
-    constructor(socket)
+    constructor()
     {
         this.clock = new THREE.Clock()
         this.scene = new THREE.Scene()
         this.initScene()
 
-        this.socket = socket
+
+        console.log(`Starting game server  ${process.env.SOCKET_PORT}!`)
+        this.io = new Server({
+            cors: {
+                origin: process.env.CLIENT_ORIGIN,
+                methods: ['GET', 'POST']
+            }
+        })
+
+        this.initNetworkEvents()
+        this.io.listen(process.env.SOCKET_PORT)
     }
 
-    initNetworking()
+    initNetworkEvents()
     {
-        this.socket.on('client:scene-request', () => {
 
-            const sceneJson = this.scene.toJSON()
-            this.socket.emit('server:scene-transfer', sceneJson)
-            
+        this.io.on('connection', socket => {
+            console.log(`${socket.id} connected to server at ${new Date().toISOString()}!`)
+
+             //TODO: fix client-to-server messages not being received by server
+            socket.on('client:scene-request', () => {
+                console.log(`[${new Date().toISOString()}] Got a request for the scene state from socket with id: "${socket.id}"`)
+            })
+
         })
+
+
+
+        //this.io.on('client:scene-request', (socket) => {
+        //    console.log(`Scene requested from client!`)
+        //    //const sceneJson = this.scene.toJSON()
+        //    //this.socket.to(socket.id).emit('server:scene-transfer', sceneJson)
+        //})
     }
 
     initScene()

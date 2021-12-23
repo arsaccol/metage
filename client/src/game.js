@@ -22,7 +22,6 @@ class Game
         this.renderer.setSize(window.innerWidth, window.innerHeight)
         this.element = document.body.appendChild(this.renderer.domElement)
         this.player = new Player(this.camera, this.element)
-
     }
 
     setupSocket()
@@ -35,6 +34,8 @@ class Game
         })
         this.socket.on('connect', () => {
             console.log(`Socket connected!`)
+
+            this.socket.emit('client:scene-request')
         })
 
 
@@ -42,6 +43,9 @@ class Game
             console.warn(`connect_error due to ${err.message}`)
 
         })
+
+
+
     }
 
 
