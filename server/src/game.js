@@ -28,20 +28,21 @@ class Game
         this.io.on('connection', socket => {
             console.log(`${socket.id} connected to server at ${new Date().toISOString()}!`)
 
-             //TODO: fix client-to-server messages not being received by server
             socket.on('client:scene-request', () => {
                 console.log(`[${new Date().toISOString()}] Got a request for the scene state from socket with id: "${socket.id}"`)
+            })
+
+            socket.on('client:scene-request', () => {
+                console.log(`Scene requested from client ${socket.id}!`)
+                const sceneJson = this.scene.toJSON()
+                socket.emit('server:scene-response', sceneJson)
+                console.log(`Scene sent to client ${socket.id}!`)
             })
 
         })
 
 
 
-        //this.io.on('client:scene-request', (socket) => {
-        //    console.log(`Scene requested from client!`)
-        //    //const sceneJson = this.scene.toJSON()
-        //    //this.socket.to(socket.id).emit('server:scene-transfer', sceneJson)
-        //})
     }
 
     initScene()

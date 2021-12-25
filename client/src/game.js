@@ -32,10 +32,19 @@ class Game
                 methods: ['GET', 'POST']
             }
         })
+
+
         this.socket.on('connect', () => {
-            console.log(`Socket connected!`)
+            console.log(`Socket with ID ${this.socket.id} connected!`)
 
             this.socket.emit('client:scene-request')
+
+            this.socket.on('server:scene-response', (sceneJson) => {
+                console.log(`Got scene back`)
+                // TODO: parse the received scene and use it
+
+            })
+
         })
 
 
