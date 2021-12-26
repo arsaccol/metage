@@ -62,23 +62,18 @@ class Game
 
         this.camera.position.y += 1.5
         this.camera.position.z += 2.5
+        this.camera.position.x += 3.0
+        this.camera.lookAt(new THREE.Vector3())
 
 
-        const planeGeometry = new THREE.PlaneGeometry()
-        const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+        const planeGeometry = new THREE.PlaneGeometry(100, 100)
+        const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x007700 })
         this.plane = new THREE.Mesh(planeGeometry, planeMaterial)
-        this.plane.scale.x = 10
-        this.plane.scale.y = 10
         this.plane.rotation.x = 3 * Math.PI / 2
 
 
-        const cubeGeometry = new THREE.BoxGeometry()
-        const cubeMaterial = new THREE.MeshBasicMaterial( { color: 0xff00ff } )
-        this.cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
-        this.cube.position.y += 1 
 
         this.scene.add(this.plane)
-        this.scene.add(this.cube)
         this.scene.add(this.axesHelper)
     }
 
@@ -90,8 +85,6 @@ class Game
 
         this.player.update(delta)
 
-        this.cube.rotation.x += 0.01
-        this.cube.rotation.y += 0.01
         this.renderer.render(this.scene, this.camera)
     }
 
