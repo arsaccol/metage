@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { Server } from 'socket.io'
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 
 class Game
 {
@@ -8,9 +9,10 @@ class Game
         this.clock = new THREE.Clock()
         this.scene = new THREE.Scene()
         this.initScene()
+        this.players = []
 
 
-        console.log(`Starting game server  ${process.env.SOCKET_PORT}!`)
+        console.log(`Starting Socket.IO game server on port ${process.env.SOCKET_PORT}!`)
         this.io = new Server({
             cors: {
                 origin: process.env.CLIENT_ORIGIN,
@@ -35,34 +37,35 @@ class Game
             socket.on('client:scene-request', () => {
                 console.log(`Scene requested from client ${socket.id}!`)
                 const sceneJson = this.scene.toJSON()
+
                 socket.emit('server:scene-response', sceneJson)
                 console.log(`Scene sent to client ${socket.id}!`)
             })
 
         })
-
-
-
     }
 
     initScene()
     {
-        this.axesHelper = new THREE.AxesHelper(5)
-        const planeGeometry = new THREE.PlaneGeometry()
-        const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-        this.plane = new THREE.Mesh(planeGeometry, planeMaterial)
-        this.plane.scale.x = 10
-        this.plane.scale.y = 10
-        this.plane.rotation.x = 3 * Math.PI / 2
+        //const planeGeometry = new THREE.PlaneGeometry()
+        //const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+        //this.plane = new THREE.Mesh(planeGeometry, planeMaterial)
+        //this.plane.scale.x = 10
+        //this.plane.scale.y = 10
+        //this.plane.rotation.x = 3 * Math.PI / 2
 
-        const cubeGeometry = new THREE.BoxGeometry()
-        const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff })
-        this.cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
-        this.cube.position.y += 1
+        //const cubeGeometry = new THREE.BoxGeometry()
+        //const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff })
+        //this.cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+        //this.cube.position.y += 1
 
-        this.scene.add(this.plane)
-        this.scene.add(this.cube)
-        this.scene.add(this.axesHelper)
+        //this.scene.add(this.plane)
+        //this.scene.add(this.cube)
+        
+        
+        
+
+        console.log('Scene initialized')
     }
 
 }

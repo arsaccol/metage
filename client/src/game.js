@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { JSONLoader } from 'three'
 
 import Player from './player'
 import { io } from 'socket.io-client'
@@ -34,27 +35,24 @@ class Game
         })
 
 
-        this.socket.on('connect', () => {
-            console.log(`Socket with ID ${this.socket.id} connected!`)
-
-            this.socket.emit('client:scene-request')
-
-            this.socket.on('server:scene-response', (sceneJson) => {
-                console.log(`Got scene back`)
-                // TODO: parse the received scene and use it
-
-            })
-
-        })
+        this.socket.on('connect', this.onConnect)
 
 
         this.socket.on('connect_error', (err) => {
             console.warn(`connect_error due to ${err.message}`)
 
         })
+    }
 
+    onConnect = () => 
+    {
+        console.log(`Socket with ID ${this.socket.id} connected!`)
 
+        this.socket.emit('client:scene-request')
 
+        this.socket.on('server:scene-response', (sceneJson) => {
+            console.log(`Got scene back`)
+        })
     }
 
 
