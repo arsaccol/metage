@@ -9,7 +9,7 @@ class Game
         this.clock = new THREE.Clock()
         this.scene = new THREE.Scene()
         this.initScene()
-        this.players = []
+        this.players = {}
 
 
         console.log(`Starting Socket.IO game server on port ${process.env.SOCKET_PORT}!`)
@@ -26,45 +26,50 @@ class Game
 
     initNetworkEvents()
     {
+        this.io.on('connection', this.onConnection)
+    }
 
-        this.io.on('connection', socket => {
-            console.log(`${socket.id} connected to server at ${new Date().toISOString()}!`)
+    onConnection = (socket) => 
+    {
+        console.log(`${socket.id} connected to server at ${new Date().toISOString()}!`)
 
-            socket.on('client:scene-request', () => {
-                console.log(`[${new Date().toISOString()}] Got a request for the scene state from socket with id: "${socket.id}"`)
-            })
+        socket.on('client:spawn-request', () => {
 
-            socket.on('client:scene-request', () => {
-                console.log(`Scene requested from client ${socket.id}!`)
-                const sceneJson = this.scene.toJSON()
+            console.log(`Spawning new player with ID: ${socket.id}!`)
 
-                socket.emit('server:scene-response', sceneJson)
-                console.log(`Scene sent to client ${socket.id}!`)
-            })
+            const newPlayerObject3D = new THREE.Object3D()
+            newPlayerObject3D.position.set(Math.random() * 10 - 5, 1, Math.random() * 10 - 5)
+            newPlayerObject3D.lookAt(new THREE.Vector3())
+            newPlayerObject3D.rotateY(Math.PI)
 
+            this.players[socket.id] = newPlayerObject3D
+            const {position, quaternion} = {...newPlayerObject3D}
+
+            socket.emit('server:spawn-response', {position: position, quaternion: quaternion})
+
+            console.log(`Players connected: [${Object.keys(this.players)}]`)
+            socket.broadcast.emit('other-clients:spawn-broadcast', {id: socket.id, position: position, quaternion: quaternion})
         })
     }
 
+    onClienSpawnRequest = (playerID) =>
+    {
+        const newPlayerObject3D = new THREE.Object3D()
+        newPlayerObject3D.position.set(Math.random() * 10 - 5, 1, Math.random() * 10 - 5)
+        newPlayerObject3D.lookAt(new THREE.Vector3())
+        newPlayerObject3D.rotateY(Math.PI)
+
+        this.players[socket.id] = newPlayerObject3D
+        const {position, quaternion} = {...newPlayerObject3D}
+
+        socket.emit('server:spawn-response', {position: position, quaternion: quaternion})
+        console.log(`Players connected: [${Object.keys(this.players)}]`)
+    }
+
+
+
     initScene()
     {
-        //const planeGeometry = new THREE.PlaneGeometry()
-        //const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-        //this.plane = new THREE.Mesh(planeGeometry, planeMaterial)
-        //this.plane.scale.x = 10
-        //this.plane.scale.y = 10
-        //this.plane.rotation.x = 3 * Math.PI / 2
-
-        //const cubeGeometry = new THREE.BoxGeometry()
-        //const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff })
-        //this.cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
-        //this.cube.position.y += 1
-
-        //this.scene.add(this.plane)
-        //this.scene.add(this.cube)
-        
-        
-        
-
         console.log('Scene initialized')
     }
 

@@ -23,6 +23,7 @@ class Game
         this.renderer.setSize(window.innerWidth, window.innerHeight)
         this.element = document.body.appendChild(this.renderer.domElement)
         this.player = new Player(this.camera, this.element)
+        this.players = {}
     }
 
     setupSocket()
@@ -48,12 +49,34 @@ class Game
     {
         console.log(`Socket with ID ${this.socket.id} connected!`)
 
-        this.socket.emit('client:scene-request')
+        this.socket.emit('client:spawn-request')
 
-        this.socket.on('server:scene-response', (sceneJson) => {
-            console.log(`Got scene back`)
+        this.socket.on('server:spawn-response', (playerObject3D) => {
+            console.log('Player spawned in server!')
+            const {position, quaternion} = playerObject3D
+            this.camera.position.set(position.x, position.y, position.z)
+            this.camera.rotation.setFromQuaternion(quaternion)
+            this.scene.add(this.camera)
         })
+
+        this.socket.on('other-clients:spawn-broadcast', this.onOtherClientsSpawnBroadcast)
     }
+
+    onOtherClientsSpawnBroadcast = (newPlayer) => 
+    {
+        console.log(`Another player connected! ${JSON.stringify(newPlayer)}`)
+        const {id, position, quaternion} = newPlayer
+        console.log(`ID: ${id} Position: ${JSON.stringify(position)} Quaternion: ${JSON.stringify(quaternion)}`)
+
+        // create logical representation
+        this.players[id] = new THREE.Object3D()
+        //this.players[id] = i
+
+        // create graphical/scene representation
+        const newPlayerObject3D = new THREE.Object3D()
+        //newPlayer.position.set(position.
+    }
+
 
 
     setupSceneState()
