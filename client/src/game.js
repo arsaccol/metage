@@ -68,13 +68,15 @@ class Game
         const {id, position, quaternion} = newPlayer
         console.log(`ID: ${id} Position: ${JSON.stringify(position)} Quaternion: ${JSON.stringify(quaternion)}`)
 
-        // create logical representation
-        this.players[id] = new THREE.Object3D()
-        //this.players[id] = i
+        const geometry = new THREE.BoxGeometry()
+        const material = new THREE.MeshBasicMaterial({color: Math.floor(Math.random() * 99999)})
 
-        // create graphical/scene representation
-        const newPlayerObject3D = new THREE.Object3D()
-        //newPlayer.position.set(position.
+        this.players[id] = new THREE.Mesh(geometry, material)
+        this.scene.add(this.players[id])
+        this.players[id].position.x += position.x
+        this.players[id].position.y += position.y
+        this.players[id].position.z += position.z
+        this.players[id].rotation.setFromQuaternion(quaternion)
     }
 
 
