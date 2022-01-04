@@ -31,6 +31,8 @@ class Game
 
     onConnection = (socket) => 
     {
+        // TODO: upon connection, show already existing players
+        // TODO: upon disconnection, send update about no longer existing player to other players
         console.log(`${socket.id} connected to server at ${new Date().toISOString()}!`)
 
         socket.on('client:spawn-request', () => {

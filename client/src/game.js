@@ -62,21 +62,26 @@ class Game
         this.socket.on('other-clients:spawn-broadcast', this.onOtherClientsSpawnBroadcast)
     }
 
+    spawnPlayer = ({id, position, quaternion}) =>
+    {
+        const geometry = new THREE.BoxGeometry()
+        const material = new THREE.MeshBasicMaterial({color: Math.floor(Math.random() * 99999)})
+
+        const newPlayer = this.players[id] = new THREE.Mesh(geometry, material)
+        this.scene.add(newPlayer)
+        newPlayer.position.x += position.x
+        newPlayer.position.y += position.y
+        newPlayer.position.z += position.z
+        newPlayer.rotation.setFromQuaternion(quaternion)
+    }
+
     onOtherClientsSpawnBroadcast = (newPlayer) => 
     {
         console.log(`Another player connected! ${JSON.stringify(newPlayer)}`)
         const {id, position, quaternion} = newPlayer
         console.log(`ID: ${id} Position: ${JSON.stringify(position)} Quaternion: ${JSON.stringify(quaternion)}`)
 
-        const geometry = new THREE.BoxGeometry()
-        const material = new THREE.MeshBasicMaterial({color: Math.floor(Math.random() * 99999)})
-
-        this.players[id] = new THREE.Mesh(geometry, material)
-        this.scene.add(this.players[id])
-        this.players[id].position.x += position.x
-        this.players[id].position.y += position.y
-        this.players[id].position.z += position.z
-        this.players[id].rotation.setFromQuaternion(quaternion)
+        this.spawnPlayer(newPlayer)
     }
 
 
