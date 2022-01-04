@@ -31,9 +31,8 @@ class Game
 
     onConnection = (socket) => 
     {
-        // TODO: upon connection, show already existing players
-        // TODO: upon disconnection, send update about no longer existing player to other players
         console.log(`${socket.id} connected to server at ${new Date().toISOString()}!`)
+        socket.on('disconnect', () => { this.onDisconnect(socket) } )
 
         socket.on('client:spawn-request', () => {
 
@@ -47,11 +46,27 @@ class Game
             this.players[socket.id] = newPlayerObject3D
             const {position, quaternion} = {...newPlayerObject3D}
 
-            socket.emit('server:spawn-response', {position: position, quaternion: quaternion})
+            const stateOfExistingPlayers = Object.keys(this.players).filter(id => id !== socket.id).map( id => {
+                const { position, quaternion } = this.players[id]
+                return {
+                    id: id,
+                    position: position,
+                    quaternion: quaternion
+                }
+            } )
+
+            socket.emit('server:spawn-response', {spawnedPlayer: {position: position, quaternion: quaternion}, existingPlayers: stateOfExistingPlayers})
 
             console.log(`Players connected: [${Object.keys(this.players)}]`)
             socket.broadcast.emit('other-clients:spawn-broadcast', {id: socket.id, position: position, quaternion: quaternion})
         })
+    }
+
+    onDisconnect = (socket) =>
+    {
+        console.log(`Client with ID ${socket.id} disconnected!`)
+        socket.broadcast.emit('other-clients:disconnect-broadcast', socket.id)
+        delete this.players[socket.id]
     }
 
     onClienSpawnRequest = (playerID) =>

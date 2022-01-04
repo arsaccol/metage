@@ -51,15 +51,18 @@ class Game
 
         this.socket.emit('client:spawn-request')
 
-        this.socket.on('server:spawn-response', (playerObject3D) => {
+        this.socket.on('server:spawn-response', ({spawnedPlayer, existingPlayers}) => {
             console.log('Player spawned in server!')
-            const {position, quaternion} = playerObject3D
+            const {position, quaternion} = spawnedPlayer
             this.camera.position.set(position.x, position.y, position.z)
             this.camera.rotation.setFromQuaternion(quaternion)
             this.scene.add(this.camera)
+
+            existingPlayers.map(player => this.spawnPlayer(player))
         })
 
         this.socket.on('other-clients:spawn-broadcast', this.onOtherClientsSpawnBroadcast)
+        this.socket.on('other-clients:disconnect-broadcast', this.onOtherClientsDisconnectBroadcast)
     }
 
     spawnPlayer = ({id, position, quaternion}) =>
@@ -81,7 +84,15 @@ class Game
         const {id, position, quaternion} = newPlayer
         console.log(`ID: ${id} Position: ${JSON.stringify(position)} Quaternion: ${JSON.stringify(quaternion)}`)
 
-        this.spawnPlayer(newPlayer)
+        if(this.socket.id !== id)
+            this.spawnPlayer(newPlayer)
+    }
+
+    onOtherClientsDisconnectBroadcast = (clientID) =>
+    {
+        console.log(`Client with ID ${clientID} disconnected!`)
+        const clientAvatarToBeRemoved = this.players[clientID]
+        this.scene.remove(clientAvatarToBeRemoved)
     }
 
 
