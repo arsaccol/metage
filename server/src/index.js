@@ -18,5 +18,5 @@ if( typeof process.env.CLIENT_ORIGIN === 'undefined' || typeof process.env.SOCKE
         For example, if you're runing a development environment, precede the node command with NODE_ENV=development and set the required environment variables in a development.env file!
     `
 
-
 const game = new Game()
+game.runLoop()

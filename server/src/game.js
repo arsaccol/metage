@@ -33,9 +33,16 @@ class Game
             // where game loop iterations take longer than the tick rate
         /////////////////////////////////////////////////////////////////////
 
+        let frameCount = 0n
+
         // actual game loop iteration 
         setInterval( () => {
-            console.log(`Delta time: ${1 / this.clock.getDelta()}`)
+
+            frameCount += 1n
+
+            // print delta time every second
+            if(frameCount % BigInt(this.tickRate) === 0n)
+                console.log(`Delta time: ${1 / this.clock.getDelta()}`)
 
         }, 1 / this.tickRate * 1000)
     }
