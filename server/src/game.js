@@ -6,6 +6,9 @@ class Game
 {
     constructor()
     {
+        // for now, there's no compensation for the case
+        // where game loop iterations take longer than the tick rate
+        this.tickRate = 30 // FPS, but without a frame; tentative value
         this.clock = new THREE.Clock()
         this.scene = new THREE.Scene()
         this.initScene()
@@ -22,6 +25,16 @@ class Game
 
         this.initNetworkEvents()
         this.io.listen(process.env.SOCKET_PORT)
+    }
+
+    // run and define the game loop I guess
+    runLoop()
+    {
+        // actual game loop iteration 
+        setInterval( () => {
+            console.log(`Delta time: ${1 / this.clock.getDelta()}`)
+
+        }, 1 / this.tickRate * 1000)
     }
 
     initNetworkEvents()
