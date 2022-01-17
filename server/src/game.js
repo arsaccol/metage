@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { Server } from 'socket.io'
-import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
+import GameState from './game-state.js'
 
 class Game
 {
@@ -10,7 +10,8 @@ class Game
         this.clock = new THREE.Clock()
         this.scene = new THREE.Scene()
         this.initScene()
-        this.players = {}
+        this.gameState = new GameState()
+        //this.players = {}
 
 
         console.log(`Starting Socket.IO game server on port ${process.env.SOCKET_PORT}!`)
@@ -41,8 +42,8 @@ class Game
             frameCount += 1n
 
             // print delta time every second
-            if(frameCount % BigInt(this.tickRate) === 0n)
-                console.log(`Delta time: ${1 / this.clock.getDelta()}`)
+            //if(frameCount % BigInt(this.tickRate) === 0n)
+            //    console.log(`Delta time: ${1 / this.clock.getDelta()}`)
 
         }, 1 / this.tickRate * 1000)
     }
@@ -57,43 +58,15 @@ class Game
         console.log(`${socket.id} connected to server at ${new Date().toISOString()}!`)
         socket.on('disconnect', () => { this.onDisconnect(socket) })
 
-        socket.on('client:spawn-request', () => { this.onClienSpawnRequest(socket) })
+        socket.on('client:spawn-request', () => { this.gameState.onClientSpawnRequest(socket) })
     }
 
     onDisconnect = (socket) =>
     {
         console.log(`Client with ID ${socket.id} disconnected!`)
         socket.broadcast.emit('other-clients:disconnect-broadcast', socket.id)
-        delete this.players[socket.id]
+        delete this.gameState.players[socket.id]
     }
-
-    onClienSpawnRequest = (socket) =>
-    {
-        console.log(`Spawning new player with ID: ${socket.id}!`)
-
-        const newPlayerObject3D = new THREE.Object3D()
-        newPlayerObject3D.position.set(Math.random() * 10 - 5, 1, Math.random() * 10 - 5)
-        newPlayerObject3D.lookAt(new THREE.Vector3())
-        newPlayerObject3D.rotateY(Math.PI)
-
-        this.players[socket.id] = newPlayerObject3D
-        const {position, quaternion} = {...newPlayerObject3D}
-
-        const stateOfExistingPlayers = Object.keys(this.players).filter(id => id !== socket.id).map( id => {
-            const { position, quaternion } = this.players[id]
-            return {
-                id: id,
-                position: position,
-                quaternion: quaternion
-            }
-        } )
-
-        socket.emit('server:spawn-response', {spawnedPlayer: {position: position, quaternion: quaternion}, existingPlayers: stateOfExistingPlayers})
-
-        console.log(`Players connected: [${Object.keys(this.players)}]`)
-        socket.broadcast.emit('other-clients:spawn-broadcast', {id: socket.id, position: position, quaternion: quaternion})
-    }
-
 
 
     initScene()
