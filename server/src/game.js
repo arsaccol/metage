@@ -65,7 +65,7 @@ class Game
     {
         console.log(`Client with ID ${socket.id} disconnected!`)
         socket.broadcast.emit('other-clients:disconnect-broadcast', socket.id)
-        delete this.gameState.players[socket.id]
+        this.gameState.deletePlayer(socket.id)
     }
 
 

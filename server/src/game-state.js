@@ -34,6 +34,12 @@ class GameState
         console.log(`Players connected: [${Object.keys(this.players)}]`)
         socket.broadcast.emit('other-clients:spawn-broadcast', {id: socket.id, position: position, quaternion: quaternion})
     }
+
+   deletePlayer(socketID)
+   {
+       delete this.players[socketID]
+   }
+
 }
 
 export default GameState
