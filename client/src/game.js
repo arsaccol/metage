@@ -49,6 +49,8 @@ class Game
     {
         console.log(`Socket with ID ${this.socket.id} connected!`)
 
+        this.socket.on('disconnect', this.onDisconnect)
+
         this.socket.emit('client:spawn-request')
 
         this.socket.on('server:spawn-response', ({spawnedPlayer, existingPlayers}) => {
@@ -63,6 +65,17 @@ class Game
 
         this.socket.on('other-clients:spawn-broadcast', this.onOtherClientsSpawnBroadcast)
         this.socket.on('other-clients:disconnect-broadcast', this.onOtherClientsDisconnectBroadcast)
+    }
+
+    onDisconnect = () => 
+    {
+        console.log(`Disconnected from server! Reloading...`)
+
+        // by reloading, for now, we prevent ghosts from our previous connections from showing up 
+        // as existing players in the server when the server reloads and cuts the connection
+
+        // disconnections should be better handled in the future, though
+        location.reload()
     }
 
     spawnPlayer = ({id, position, quaternion}) =>
