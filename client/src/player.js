@@ -121,9 +121,12 @@ class Player
         const activeWalkDirections = Object.keys(this.isWalking).filter( directionName => { return this.isWalking[directionName] === true })
 
         const walkVector = new THREE.Vector3()
-        activeWalkDirections.map(direction => {
-            walkVector.add(walkDirections[direction].normalize().multiplyScalar(this.walkSpeed * dt))
-        })
+
+        // calculate normalized walk vector
+        activeWalkDirections.forEach( direction => { walkVector.add( walkDirections[direction]) } ); walkVector.normalize()
+
+        // now scale it by walk speed and dt
+        walkVector.multiplyScalar(this.walkSpeed * dt)
 
         this.camera.position.add(walkVector)
     }
