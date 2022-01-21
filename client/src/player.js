@@ -3,7 +3,7 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 
 class Player
 {
-    constructor(camera, domElement)
+    constructor(camera, domElement, socket)
     {
         this.camera = camera
         this.domElement = domElement

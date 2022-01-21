@@ -22,7 +22,6 @@ class Game
         this.renderer = new THREE.WebGLRenderer()
         this.renderer.setSize(window.innerWidth, window.innerHeight)
         this.element = document.body.appendChild(this.renderer.domElement)
-        this.player = new Player(this.camera, this.element)
         this.players = {}
     }
 
@@ -49,6 +48,8 @@ class Game
     {
         console.log(`Socket with ID ${this.socket.id} connected!`)
 
+        this.player = new Player(this.camera, this.element, this.socket)
+
         this.socket.on('disconnect', this.onDisconnect)
 
         this.socket.emit('client:spawn-request')
@@ -65,6 +66,8 @@ class Game
 
         this.socket.on('other-clients:spawn-broadcast', this.onOtherClientsSpawnBroadcast)
         this.socket.on('other-clients:disconnect-broadcast', this.onOtherClientsDisconnectBroadcast)
+
+        this.loop()
     }
 
     onDisconnect = () => 
