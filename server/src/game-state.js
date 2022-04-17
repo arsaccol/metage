@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import Player from  './player.js'
 
 class GameState
 {
@@ -17,9 +18,13 @@ class GameState
         newPlayerObject3D.lookAt(new THREE.Vector3())
         newPlayerObject3D.rotateY(Math.PI)
 
-        this.players[socket.id] = newPlayerObject3D
-        const {position, quaternion} = {...newPlayerObject3D}
+        // create object for this player
+        const player = new Player({socket, position: new THREE.Vector3(Math.random() * 10 - 5, 1, Math.random() * 10 - 5), quaternion: new THREE.Quaternion})
 
+        this.players[socket.id] = player
+        const {position, quaternion} = player
+
+        // send state of other players
         const stateOfExistingPlayers = Object.keys(this.players).filter(id => id !== socket.id).map( id => {
             const { position, quaternion } = this.players[id]
             return {
