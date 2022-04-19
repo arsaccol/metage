@@ -5,6 +5,7 @@ class Player
 {
     constructor(camera, domElement, socket)
     {
+        this.socket = socket
         this.camera = camera
         this.domElement = domElement
 
@@ -21,6 +22,16 @@ class Player
         }
 
         this.setupCallbacks()
+    }
+
+    onMouselookControlsChange = (e) =>
+    {
+        const {position, quaternion} = this.controls.getObject()
+        console.log(`PointerLockControls change event: ${JSON.stringify(e)}`)
+        console.log(quaternion)
+        console.log(position)
+
+        this.socket.emit('client:player-rotate', {position,quaternion})
     }
 
 
@@ -69,9 +80,7 @@ class Player
             console.log(`unlocked`)
         })
 
-        this.controls.addEventListener('change', e => 
-        {
-        })
+        this.controls.addEventListener('change', this.onMouselookControlsChange)
 
 
         document.body.addEventListener('keydown', e => 
@@ -108,8 +117,6 @@ class Player
             }
 
         })
-
-
     }
 
     update(dt)

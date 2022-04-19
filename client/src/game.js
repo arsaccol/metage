@@ -66,6 +66,7 @@ class Game
 
         this.socket.on('other-clients:spawn-broadcast', this.onOtherClientsSpawnBroadcast)
         this.socket.on('other-clients:disconnect-broadcast', this.onOtherClientsDisconnectBroadcast)
+        this.socket.on('server:other-player-rotated', this.onOtherPlayerRotated)
 
         this.loop()
     }
@@ -109,6 +110,12 @@ class Game
         console.log(`Client with ID ${clientID} disconnected!`)
         const clientAvatarToBeRemoved = this.players[clientID]
         this.scene.remove(clientAvatarToBeRemoved)
+    }
+
+    onOtherPlayerRotated = ({id, quaternion, position}) =>
+    {
+        this.players[id].rotation.setFromQuaternion(quaternion)
+        console.log(`Other player with ID ${id} rotated to quaternion ${JSON.stringify(quaternion)}, currently at position: ${JSON.stringify(this.players[id].position)}!`)
     }
 
 
