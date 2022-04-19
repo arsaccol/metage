@@ -3,9 +3,10 @@ import Player from  './player.js'
 
 class GameState
 {
-    constructor()
+    constructor({tickRate})
     {
         this.players = {}
+        this.tickRate
     }
 
 
@@ -38,6 +39,17 @@ class GameState
 
         console.log(`Players connected: [${Object.keys(this.players)}]`)
         socket.broadcast.emit('other-clients:spawn-broadcast', {id: socket.id, position: position, quaternion: quaternion})
+    }
+
+    onPlayerRotate({socket, position, quaternion})
+    {
+        const player = this.players[socket.id]
+        player.quaternion.set(quaternion)
+
+        console.log(`Player ${socket.id} rotated to ${JSON.stringify(quaternion)}`)
+
+        // let others know this player has moved
+        socket.broadcast.emit('server:other-player-rotated', {id: socket.id, quaternion: quaternion, position: player.position})
     }
 
    deletePlayer(socketID)

@@ -14,6 +14,14 @@ class Player extends THREE.Object3D
         this.rotateY(Math.PI)
 
         this.isWalking = false
+        this.walkSpeed = 5
+    }
+
+    update(delta)
+    {
+        if (this.isWalking)
+        {
+        }
     }
 }
 

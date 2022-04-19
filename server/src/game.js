@@ -10,7 +10,7 @@ class Game
         this.clock = new THREE.Clock()
         this.scene = new THREE.Scene()
         this.initScene()
-        this.gameState = new GameState()
+        this.gameState = new GameState({tickRate: this.tickRate})
         //this.players = {}
 
 
@@ -59,6 +59,10 @@ class Game
         socket.on('disconnect', () => { this.onDisconnect(socket) })
 
         socket.on('client:spawn-request', () => { this.gameState.onClientSpawnRequest(socket) })
+        //socket.on('client:player-rotate', (data) => { this.gameState.players[socket.id].onPlayerRotate(socket, data) })
+        socket.on('client:player-rotate', (rotationData) => { 
+            this.gameState.onPlayerRotate({socket, position: rotationData.position, quaternion: rotationData.quaternion})
+        })
     }
 
     onDisconnect = (socket) =>
