@@ -14,7 +14,7 @@ class Player
         this.walkSpeed = 5
 
 
-        this.isWalking = {
+        this.isWalkingState = {
             forward: false,
             backward: false,
             left: false,
@@ -32,6 +32,20 @@ class Player
         console.log(position)
 
         this.socket.emit('client:player-rotate', {position,quaternion})
+    }
+
+    isWalking() {
+        return (
+            this.isWalkingState.forward ||
+            this.isWalkingState.backward ||
+            this.isWalkingState.left ||
+            this.isWalkingState.right
+        )
+    }
+
+    // simply returns an array of directions that are active
+    activeWalkDirections() {
+        return Object.keys(this.isWalkingState).filter( directionName => { return this.isWalkingState[directionName] === true })
     }
 
 
@@ -90,13 +104,13 @@ class Player
                 const keyCode = String.fromCharCode(e.keyCode)
 
                 if(keyCode === 'W')
-                    this.isWalking.forward = true 
+                    this.isWalkingState.forward = true 
                 if(keyCode === 'S')
-                    this.isWalking.backward = true
+                    this.isWalkingState.backward = true
                 if(keyCode === 'A')
-                    this.isWalking.left = true
+                    this.isWalkingState.left = true
                 if(keyCode === 'D')
-                    this.isWalking.right = true
+                    this.isWalkingState.right = true
             }
         })
 
@@ -107,13 +121,13 @@ class Player
                 const keyCode = String.fromCharCode(e.keyCode)
 
                 if(keyCode === 'W')
-                    this.isWalking.forward = false
+                    this.isWalkingState.forward = false
                 if(keyCode === 'S')
-                    this.isWalking.backward = false
+                    this.isWalkingState.backward = false
                 if(keyCode === 'A')
-                    this.isWalking.left = false
+                    this.isWalkingState.left = false
                 if(keyCode === 'D')
-                    this.isWalking.right = false
+                    this.isWalkingState.right = false
             }
 
         })
@@ -123,19 +137,21 @@ class Player
     {
         //this.camera.position.add(this.walkVector.multiplyScalar(this.walkSpeed * dt))
 
-        const walkDirections = this.getWalkDirections()
+        if(this.isWalking()) {
+            const walkDirections = this.getWalkDirections()
+            const getActiveWalkDirections = this.activeWalkDirections()
+            const walkVector = new THREE.Vector3()
 
-        const activeWalkDirections = Object.keys(this.isWalking).filter( directionName => { return this.isWalking[directionName] === true })
+            // calculate normalized walk vector
+            getActiveWalkDirections.forEach( direction => { walkVector.add( walkDirections[direction]) } ); walkVector.normalize()
 
-        const walkVector = new THREE.Vector3()
+            // now scale it by walk speed and dt
+            walkVector.multiplyScalar(this.walkSpeed * dt)
 
-        // calculate normalized walk vector
-        activeWalkDirections.forEach( direction => { walkVector.add( walkDirections[direction]) } ); walkVector.normalize()
 
-        // now scale it by walk speed and dt
-        walkVector.multiplyScalar(this.walkSpeed * dt)
+            this.camera.position.add(walkVector)
+        }
 
-        this.camera.position.add(walkVector)
     }
 
     false
