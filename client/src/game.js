@@ -4,6 +4,8 @@ import { JSONLoader } from 'three'
 import Player from './player'
 import { io } from 'socket.io-client'
 
+const VITE_GAME_HOST = import.meta.env.VITE_GAME_HOST
+
 class Game
 {
     constructor()
@@ -27,7 +29,7 @@ class Game
 
     setupSocket()
     {
-        this.socket = io(`http://localhost:${SOCKET_PORT}/`, {
+        this.socket = io(VITE_GAME_HOST, {
             cors: {
                 origin: `http://localhost/${CLIENT_PORT}`,
                 methods: ['GET', 'POST']

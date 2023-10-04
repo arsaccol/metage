@@ -4,3 +4,4 @@ dist
 dist-ssr
 *.vim
 
+.env.development

@@ -2,7 +2,7 @@
   "name": "metagame-client",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "NODE_ENV=development vite --host",
     "build": "vite build",
     "preview": "vite preview"
   },
