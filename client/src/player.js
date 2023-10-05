@@ -111,6 +111,12 @@ class Player
                     this.isWalkingState.left = true
                 if(keyCode === 'D')
                     this.isWalkingState.right = true
+
+                if(['W', 'S', 'A', 'D'].includes(keyCode)) {
+                    this.socket.emit('client:player-start-walk', {
+                        walkVector: this.getWalkDirections()
+                    })
+                }
             }
         })
 
@@ -133,22 +139,26 @@ class Player
         })
     }
 
+    getWalkVector(dt) {
+        const walkDirections = this.getWalkDirections()
+        const getActiveWalkDirections = this.activeWalkDirections()
+        const walkVector = new THREE.Vector3()
+
+        // calculate normalized walk vector
+        getActiveWalkDirections.forEach( direction => { walkVector.add( walkDirections[direction]) } ); walkVector.normalize()
+
+
+        return walkVector
+    }
+
     update(dt)
     {
         //this.camera.position.add(this.walkVector.multiplyScalar(this.walkSpeed * dt))
 
         if(this.isWalking()) {
-            const walkDirections = this.getWalkDirections()
-            const getActiveWalkDirections = this.activeWalkDirections()
-            const walkVector = new THREE.Vector3()
+            const walkVector = this.getWalkVector(dt)
 
-            // calculate normalized walk vector
-            getActiveWalkDirections.forEach( direction => { walkVector.add( walkDirections[direction]) } ); walkVector.normalize()
-
-            // now scale it by walk speed and dt
             walkVector.multiplyScalar(this.walkSpeed * dt)
-
-
             this.camera.position.add(walkVector)
         }
 
