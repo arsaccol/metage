@@ -139,7 +139,7 @@ class Player
         })
     }
 
-    getWalkVector(dt) {
+    getWalkVector() {
         const walkDirections = this.getWalkDirections()
         const getActiveWalkDirections = this.activeWalkDirections()
         const walkVector = new THREE.Vector3()
