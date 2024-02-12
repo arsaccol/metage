@@ -27,9 +27,7 @@ class Player
     onMouselookControlsChange = (e) =>
     {
         const {position, quaternion} = this.controls.getObject()
-        console.log(`PointerLockControls change event: ${JSON.stringify(e)}`)
-        console.log(quaternion)
-        console.log(position)
+        //console.log(`PointerLockControls change event: ${JSON.stringify(e)}`)
 
         this.socket.emit('client:player-rotate', {position,quaternion})
     }
@@ -99,6 +97,12 @@ class Player
 
         document.body.addEventListener('keydown', e => 
         {
+
+            if(e.repeat) {
+                e.preventDefault()
+                return ;
+            }
+
             if(this.controls.isLocked)
             {
                 const keyCode = String.fromCharCode(e.keyCode)
@@ -112,9 +116,10 @@ class Player
                 if(keyCode === 'D')
                     this.isWalkingState.right = true
 
-                if(['W', 'S', 'A', 'D'].includes(keyCode)) {
+                if(this.getWalkVector().length() > 1e-6) {
+                    console.log("Walking on key down")
                     this.socket.emit('client:player-start-walk', {
-                        walkVector: this.getWalkDirections()
+                        walkVector: this.getWalkVector()
                     })
                 }
             }
@@ -122,8 +127,15 @@ class Player
 
         document.body.addEventListener('keyup', e =>
         {
+            e.preventDefault()
+            //if(e.repeat) {
+            //    e.preventDefault()
+            //    return ;
+            //}
+
             if(this.controls.isLocked)
             {
+                console.log('KEY UP WITH CONTROLS LOCKED')
                 const keyCode = String.fromCharCode(e.keyCode)
 
                 if(keyCode === 'W')
@@ -134,6 +146,20 @@ class Player
                     this.isWalkingState.left = false
                 if(keyCode === 'D')
                     this.isWalkingState.right = false
+
+                //if(['W', 'S', 'A', 'D'].includes(keyCode)) {
+                //    this.socket.emit('client:player-stop-walk', {
+                //        walkVector: this.getWalkVector()
+                //    })
+                //}
+
+                const walkVectorIsSmallEnoughToStop = this.getWalkVector().length() < 1e-6
+                if(walkVectorIsSmallEnoughToStop) {
+                    console.log("Stopped on key up")
+                    this.socket.emit('client:player-stop-walk', {
+                        walkVector: this.getWalkVector()
+                    })
+                }
             }
 
         })

@@ -9,6 +9,11 @@ class GameState
         this.tickRate
     }
 
+    update(dt) 
+    {
+        //console.log(`Updating game state ${dt}`)
+    }
+
 
     onClientSpawnRequest(socket)
     {

@@ -45,6 +45,10 @@ class Game
             //if(frameCount % BigInt(this.tickRate) === 0n)
             //    console.log(`Delta time: ${1 / this.clock.getDelta()}`)
 
+            const deltaTime = this.clock.getDelta()
+
+            this.gameState.update(deltaTime)
+
         }, 1 / this.tickRate * 1000)
     }
 
@@ -63,6 +67,21 @@ class Game
         socket.on('client:player-rotate', (rotationData) => { 
             this.gameState.onPlayerRotate({socket, position: rotationData.position, quaternion: rotationData.quaternion})
         })
+
+        socket.on('client:player-start-walk', (walkdata) => {
+            console.log('====== PLAYER WALK STARTED ======')
+            console.log({walkdata})
+            console.log('=================================')
+
+        })
+
+        socket.on('client:player-stop-walk', (event) => {
+            console.log('====== PLAYER WALK ENDED ======')
+            console.log(event)
+            console.log('=================================')
+
+        })
+
     }
 
     onDisconnect = (socket) =>
@@ -77,7 +96,6 @@ class Game
     {
         console.log('Scene initialized')
     }
-
 }
 
 export default Game

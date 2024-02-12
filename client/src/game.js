@@ -4,7 +4,8 @@ import { JSONLoader } from 'three'
 import Player from './player'
 import { io } from 'socket.io-client'
 
-const VITE_GAME_HOST = import.meta.env.VITE_GAME_HOST
+//const VITE_GAME_HOST = import.meta.env.VITE_GAME_HOST
+const VITE_GAME_HOST = 'http://localhost:12345'
 
 class Game
 {
@@ -18,6 +19,7 @@ class Game
 
     init()
     {
+        console.log(`Game.init`)
         this.clock = new THREE.Clock()
         this.scene = new THREE.Scene()
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000)
@@ -69,6 +71,7 @@ class Game
         this.socket.on('other-clients:spawn-broadcast', this.onOtherClientsSpawnBroadcast)
         this.socket.on('other-clients:disconnect-broadcast', this.onOtherClientsDisconnectBroadcast)
         this.socket.on('server:other-player-rotated', this.onOtherPlayerRotated)
+        this.socket.on('server:other-played-moved', this.onOtherPlayerMovedBroadcast)
 
         this.loop()
     }
@@ -114,10 +117,19 @@ class Game
         this.scene.remove(clientAvatarToBeRemoved)
     }
 
+    // Event: 'client:player-move-broadcast'
+    onOtherPlayerMovedBroadcast = ({id, position, quaternion}) => 
+    {
+        console.log("Other player moving!")
+        this.players[id].position = position
+        //this.players[id].quaternion = quaternion
+    }
+
+
     onOtherPlayerRotated = ({id, quaternion, position}) =>
     {
         this.players[id].rotation.setFromQuaternion(quaternion)
-        console.log(`Other player with ID ${id} rotated to quaternion ${JSON.stringify(quaternion)}, currently at position: ${JSON.stringify(this.players[id].position)}!`)
+        //console.log(`Other player with ID ${id} rotated to quaternion ${JSON.stringify(quaternion)}, currently at position: ${JSON.stringify(this.players[id].position)}!`)
     }
 
 
